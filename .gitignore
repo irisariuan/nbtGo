@@ -32,3 +32,10 @@ go.work.sum
 # .vscode/
 .DS_Store
 local/*
+
+# Build output
+nbtGo
+byte_conversion
+create_nbt
+parse_to_json
+example_output.nbt
