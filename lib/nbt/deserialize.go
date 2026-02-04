@@ -44,6 +44,7 @@ func ParseNBT(data []byte, isBedrock bool) (NBTTag, TagParseError) {
 		return nil, err
 	}
 	if len(remaining) > 0 {
+		fmt.Printf("Warning: %d bytes of extra data after parsing NBT tag (data: %s)\n", len(remaining), hex.EncodeToString(remaining))
 		return nil, newParseArrayError("extra data after parsing NBT tag")
 	}
 	if tag.Type() != BTagCompound && tag.Type() != BTagList {

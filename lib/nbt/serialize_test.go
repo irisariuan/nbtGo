@@ -308,9 +308,8 @@ func TestSerializeTagCompound(t *testing.T) {
 	expected = append(expected, []byte("age")...)
 	expected = append(expected, lib.Int32ToBytes(25, true)...)
 
-	// TAG_End
+	// TAG_End (just single byte, no name length)
 	expected = append(expected, byte(BTagEnd))
-	expected = append(expected, lib.UInt16ToBytes(0, true)...)
 
 	if !bytes.Equal(data, expected) {
 		t.Errorf("Serialized data mismatch.\nGot:      %v\nExpected: %v", data, expected)
@@ -327,8 +326,8 @@ func TestSerializeTagEnd(t *testing.T) {
 		t.Fatalf("Failed to serialize TagEnd: %v", err)
 	}
 
-	expected := []byte{byte(BTagEnd)}
-	expected = append(expected, lib.UInt16ToBytes(0, true)...)
+	// TagEnd is just a single byte 0x00 with no name length per NBT spec
+	expected := []byte{0x00}
 
 	if !bytes.Equal(data, expected) {
 		t.Errorf("Serialized data mismatch.\nGot:      %v\nExpected: %v", data, expected)
@@ -398,13 +397,11 @@ func TestSerializeNestedStructure(t *testing.T) {
 	expected = append(expected, []byte("flag")...)
 	expected = append(expected, 1)
 
-	// Nested TAG_End
+	// Nested TAG_End (just single byte, no name length)
 	expected = append(expected, byte(BTagEnd))
-	expected = append(expected, lib.UInt16ToBytes(0, true)...)
 
-	// Root TAG_End
+	// Root TAG_End (just single byte, no name length)
 	expected = append(expected, byte(BTagEnd))
-	expected = append(expected, lib.UInt16ToBytes(0, true)...)
 
 	if !bytes.Equal(data, expected) {
 		t.Errorf("Serialized data mismatch.\nGot length:      %d\nExpected length: %d", len(data), len(expected))

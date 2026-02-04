@@ -3,6 +3,7 @@ package lib
 import (
 	"bufio"
 	"compress/gzip"
+	"compress/zlib"
 	"encoding/binary"
 	"io"
 	"math"
@@ -136,6 +137,31 @@ func BytesToUInt64(bytes []byte, bigEndian bool) (uint64, error) {
 }
 
 func UnzipReader(reader io.Reader) ([]byte, error) {
+	magicBytes := make([]byte, 2)
+	n, err := reader.Read(magicBytes)
+	if err != nil {
+		return nil, err
+	}
+	if n < 2 {
+		return nil, io.ErrUnexpectedEOF
+	}
+	if magicBytes[0] != 0x1f || magicBytes[1] != 0x8b {
+		// check if it's a zlib format
+		if magicBytes[0] == 0x78 && (magicBytes[1] == 0x01 || magicBytes[1] == 0x5e || magicBytes[1] == 0x9c || magicBytes[1] == 0xda) {
+			combinedReader := Reset(bufio.NewReader(reader), magicBytes)
+			zlibReader, err := zlib.NewReader(combinedReader)
+			if err != nil {
+				return nil, err
+			}
+			defer zlibReader.Close()
+			return io.ReadAll(zlibReader)
+		}
+
+		// Not compressed, return the original data
+		combinedReader := Reset(bufio.NewReader(reader), magicBytes)
+		return io.ReadAll(combinedReader)
+	}
+	reader = Reset(bufio.NewReader(reader), magicBytes)
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
 		return nil, err
