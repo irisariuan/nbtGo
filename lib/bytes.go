@@ -143,3 +143,65 @@ func UnzipReader(reader io.Reader) ([]byte, error) {
 	defer gzipReader.Close()
 	return io.ReadAll(gzipReader)
 }
+
+// UInt16ToBytes converts a uint16 to a byte slice in big-endian or little-endian format
+func UInt16ToBytes(val uint16, bigEndian bool) []byte {
+	bytes := make([]byte, 2)
+	if bigEndian {
+		binary.BigEndian.PutUint16(bytes, val)
+	} else {
+		binary.LittleEndian.PutUint16(bytes, val)
+	}
+	return bytes
+}
+
+// Int16ToBytes converts an int16 to a byte slice in big-endian or little-endian format
+func Int16ToBytes(val int16, bigEndian bool) []byte {
+	return UInt16ToBytes(uint16(val), bigEndian)
+}
+
+// Int32ToBytes converts an int32 to a byte slice in big-endian or little-endian format
+func Int32ToBytes(val int32, bigEndian bool) []byte {
+	bytes := make([]byte, 4)
+	if bigEndian {
+		binary.BigEndian.PutUint32(bytes, uint32(val))
+	} else {
+		binary.LittleEndian.PutUint32(bytes, uint32(val))
+	}
+	return bytes
+}
+
+// Int64ToBytes converts an int64 to a byte slice in big-endian or little-endian format
+func Int64ToBytes(val int64, bigEndian bool) []byte {
+	bytes := make([]byte, 8)
+	if bigEndian {
+		binary.BigEndian.PutUint64(bytes, uint64(val))
+	} else {
+		binary.LittleEndian.PutUint64(bytes, uint64(val))
+	}
+	return bytes
+}
+
+// Float32ToBytes converts a float32 to a byte slice in big-endian or little-endian format
+func Float32ToBytes(val float32, bigEndian bool) []byte {
+	bits := math.Float32bits(val)
+	bytes := make([]byte, 4)
+	if bigEndian {
+		binary.BigEndian.PutUint32(bytes, bits)
+	} else {
+		binary.LittleEndian.PutUint32(bytes, bits)
+	}
+	return bytes
+}
+
+// Float64ToBytes converts a float64 to a byte slice in big-endian or little-endian format
+func Float64ToBytes(val float64, bigEndian bool) []byte {
+	bits := math.Float64bits(val)
+	bytes := make([]byte, 8)
+	if bigEndian {
+		binary.BigEndian.PutUint64(bytes, bits)
+	} else {
+		binary.LittleEndian.PutUint64(bytes, bits)
+	}
+	return bytes
+}

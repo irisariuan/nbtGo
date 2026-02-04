@@ -154,8 +154,7 @@ func parsePayload(tag baseTag, payload []byte, bigEndian bool) (NBTTag, TagParse
 			if len(payload) < 4+arrayLength {
 				return nil, newParseValueError("payload too short for byte array")
 			}
-			arrayData := make([]byte, arrayLength)
-			copy(arrayData, payload[4:4+arrayLength])
+			arrayData := payload[4 : 4+arrayLength]
 			return &TagByteArray{baseTag: tag, Value: arrayData}, nil
 		}
 	case BTagString:
@@ -179,7 +178,7 @@ func parsePayload(tag baseTag, payload []byte, bigEndian bool) (NBTTag, TagParse
 				return nil, newParseValueError("failed to parse list length")
 			}
 			listLength := int(listLengthUint)
-			items := make([]NBTTag, 0)
+			items := make([]NBTTag, 0) // unknown size, known length
 			offset := 5
 			for range listLength {
 				itemTag := baseTag{listType, "", tag.zIndex + 1}
@@ -220,8 +219,8 @@ func parsePayload(tag baseTag, payload []byte, bigEndian bool) (NBTTag, TagParse
 				return nil, newParseValueError("error parsing array size")
 			}
 			offset := 4
-			arr := make([]int32, arrSize*4)
-			for range arrSize {
+			arr := make([]int32, arrSize)
+			for i := range arrSize {
 				// parse per 4 bytes
 				if len(payload[offset:]) < 4 {
 					return nil, newParseArrayError("error parsing int array tag")
@@ -230,7 +229,7 @@ func parsePayload(tag baseTag, payload []byte, bigEndian bool) (NBTTag, TagParse
 				if err != nil {
 					return nil, newParseArrayError("error parsing int array tag value")
 				}
-				arr = append(arr, intValue)
+				arr[i] = intValue
 				offset += 4
 			}
 			return &TagIntArray{baseTag: tag, Value: arr}, nil
@@ -242,8 +241,8 @@ func parsePayload(tag baseTag, payload []byte, bigEndian bool) (NBTTag, TagParse
 				return nil, newParseValueError("error parsing array size")
 			}
 			offset := 4
-			arr := make([]int64, arrSize*8)
-			for range arrSize {
+			arr := make([]int64, arrSize)
+			for i := range arrSize {
 				// parse per 8 bytes
 				if len(payload[offset:]) < 8 {
 					return nil, newParseArrayError("error parsing long array tag")
@@ -252,13 +251,17 @@ func parsePayload(tag baseTag, payload []byte, bigEndian bool) (NBTTag, TagParse
 				if err != nil {
 					return nil, newParseArrayError("error parsing long array tag value")
 				}
-				arr = append(arr, longValue)
+				arr[i] = longValue
 				offset += 8
 			}
 			return &TagLongArray{baseTag: tag, Value: arr}, nil
 		}
+	default:
+		{
+
+			return nil, newParseValueError("unknown tag type")
+		}
 	}
-	return nil, newParseValueError("unknown tag type")
 }
 
 func GetTagFullSize(tag NBTTag) int {

@@ -166,7 +166,7 @@ type TagIntArray struct {
 	Value []int32
 }
 
-func (t *TagIntArray) DataLength() int { return len(t.Value) } // 4 bytes for length + int32 array
+func (t *TagIntArray) DataLength() int { return 4 + len(t.Value)*4 } // 4 bytes for length + int32 array
 
 // TagLongArray represents an array of int64
 type TagLongArray struct {
@@ -174,7 +174,7 @@ type TagLongArray struct {
 	Value []int64
 }
 
-func (t *TagLongArray) DataLength() int { return len(t.Value) } // 4 bytes for length + int64 array
+func (t *TagLongArray) DataLength() int { return 4 + len(t.Value)*8 } // 4 bytes for length + int64 array
 
 // TagList represents a list of tags (all same type)
 type TagList struct {
