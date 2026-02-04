@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"goNbt/lib"
 	"goNbt/lib/nbt"
 	"io"
@@ -26,6 +25,21 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		if len(os.Args) > 2 {
+			switch os.Args[2] {
+			// expect gzip output to be different, as header may differ (timestamp, comments and etc.)
+			case "gzip":
+				serializedBytes, err = lib.ZipToGzip(serializedBytes)
+				if err != nil {
+					panic(err)
+				}
+			case "zlib":
+				serializedBytes, err = lib.ZipToZlib(serializedBytes)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
 		os.Stdout.Write(serializedBytes)
 		return
 	}
@@ -43,5 +57,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(jsonTag))
+	os.Stdout.Write(jsonTag)
 }

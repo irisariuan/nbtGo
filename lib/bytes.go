@@ -2,6 +2,7 @@ package lib
 
 import (
 	"bufio"
+	"bytes"
 	"compress/gzip"
 	"compress/zlib"
 	"encoding/binary"
@@ -36,6 +37,40 @@ func (r *byteReader) Read(p []byte) (n int, err error) {
 	n = copy(p, r.b[r.i:])
 	r.i += n
 	return n, nil
+}
+
+func ZipToGzip(data []byte) ([]byte, error) {
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
+	n, err := zw.Write(data)
+	if err != nil {
+		return nil, err
+	}
+	if n < len(data) {
+		return nil, newByteError("failed to write all data to gzip writer")
+	}
+	err = zw.Close()
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func ZipToZlib(data []byte) ([]byte, error) {
+	var buf bytes.Buffer
+	zw := zlib.NewWriter(&buf)
+	n, err := zw.Write(data)
+	if err != nil {
+		return nil, err
+	}
+	if n < len(data) {
+		return nil, newByteError("failed to write all data to zlib writer")
+	}
+	err = zw.Close()
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 func Reset(reader *bufio.Reader, bytes []byte) io.Reader {
