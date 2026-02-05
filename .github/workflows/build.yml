@@ -71,19 +71,31 @@ jobs:
       run: |
         mkdir -p release
         # Copy Linux libraries
-        cp artifacts/build-ubuntu-latest/libnbt.so release/libnbt-linux-amd64.so 2>/dev/null || true
-        cp artifacts/build-ubuntu-latest/libnbt.h release/libnbt.h 2>/dev/null || true
-        cp artifacts/build-ubuntu-latest/nbt release/nbt-linux-amd64 2>/dev/null || true
+        cp artifacts/build-ubuntu-latest/libnbt.so release/libnbt-linux-amd64.so
+        cp artifacts/build-ubuntu-latest/libnbt.h release/libnbt.h
+        cp artifacts/build-ubuntu-latest/nbt release/nbt-linux-amd64
         
         # Copy macOS libraries
-        cp artifacts/build-macos-latest/libnbt.dylib release/libnbt-macos-amd64.dylib 2>/dev/null || true
-        cp artifacts/build-macos-latest/nbt release/nbt-macos-amd64 2>/dev/null || true
+        cp artifacts/build-macos-latest/libnbt.dylib release/libnbt-macos-amd64.dylib
+        cp artifacts/build-macos-latest/nbt release/nbt-macos-amd64
         
         # Copy Windows libraries
-        cp artifacts/build-windows-latest/libnbt.dll release/libnbt-windows-amd64.dll 2>/dev/null || true
-        cp artifacts/build-windows-latest/nbt.exe release/nbt-windows-amd64.exe 2>/dev/null || true
+        cp artifacts/build-windows-latest/libnbt.dll release/libnbt-windows-amd64.dll
+        cp artifacts/build-windows-latest/nbt.exe release/nbt-windows-amd64.exe
+        
+        # Verify all required files exist
+        echo "Verifying release assets..."
+        for file in libnbt-linux-amd64.so libnbt.h nbt-linux-amd64 \
+                    libnbt-macos-amd64.dylib nbt-macos-amd64 \
+                    libnbt-windows-amd64.dll nbt-windows-amd64.exe; do
+          if [ ! -f "release/$file" ]; then
+            echo "ERROR: Missing required file: $file"
+            exit 1
+          fi
+        done
         
         # List release files
+        echo "Release assets ready:"
         ls -lh release/
     
     - name: Create Release
