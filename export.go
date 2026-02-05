@@ -1,4 +1,4 @@
-//go:build cshared
+//go:build cshared && (linux || darwin || windows) && (amd64 || arm64)
 
 package main
 
