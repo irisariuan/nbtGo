@@ -40,8 +40,13 @@ windows: $(BUILD_DIR)
 # Build the original CLI tool
 cli: $(BUILD_DIR)
 	@echo "Building CLI tool..."
+ifeq ($(OS),Windows_NT)
+	@go build -o $(BUILD_DIR)/nbt.exe main.go
+	@echo "CLI tool built: $(BUILD_DIR)/nbt.exe"
+else
 	@go build -o $(BUILD_DIR)/nbt main.go
 	@echo "CLI tool built: $(BUILD_DIR)/nbt"
+endif
 
 # Run tests
 test:
