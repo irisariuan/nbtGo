@@ -13,28 +13,28 @@ $(BUILD_DIR):
 # Build shared library
 shared: $(BUILD_DIR)
 	@echo "Building shared library..."
-	@go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.so export.go
+	@go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.so .
 	@echo "Shared library built: $(BUILD_DIR)/libnbt.so and $(BUILD_DIR)/libnbt.h"
 
 # Build for different platforms
 linux: $(BUILD_DIR)
 	@echo "Building shared library for Linux..."
-	@GOOS=linux GOARCH=amd64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.so export.go
+	@GOOS=linux GOARCH=amd64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.so .
 	@echo "Linux shared library built: $(BUILD_DIR)/libnbt.so"
 
 macos: $(BUILD_DIR)
 	@echo "Building shared library for macOS..."
-	@GOOS=darwin GOARCH=amd64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.dylib export.go
+	@GOOS=darwin GOARCH=amd64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.dylib .
 	@echo "macOS shared library built: $(BUILD_DIR)/libnbt.dylib"
 
 macos-arm: $(BUILD_DIR)
 	@echo "Building shared library for macOS ARM64..."
-	@GOOS=darwin GOARCH=arm64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.dylib export.go
+	@GOOS=darwin GOARCH=arm64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.dylib .
 	@echo "macOS ARM64 shared library built: $(BUILD_DIR)/libnbt.dylib"
 
 windows: $(BUILD_DIR)
 	@echo "Building shared library for Windows..."
-	@GOOS=windows GOARCH=amd64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.dll export.go
+	@GOOS=windows GOARCH=amd64 go build -tags cshared -buildmode=c-shared -o $(BUILD_DIR)/libnbt.dll .
 	@echo "Windows shared library built: $(BUILD_DIR)/libnbt.dll"
 
 # Build the original CLI tool
