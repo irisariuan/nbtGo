@@ -196,6 +196,7 @@ func UnzipReader(reader io.Reader) ([]byte, error) {
 		combinedReader := Reset(bufio.NewReader(reader), magicBytes)
 		return io.ReadAll(combinedReader)
 	}
+	// It's gzip format
 	reader = Reset(bufio.NewReader(reader), magicBytes)
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {

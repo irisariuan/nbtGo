@@ -10,6 +10,8 @@ package main
 import "C"
 import (
 	"bytes"
+	"compress/gzip"
+	"compress/zlib"
 	"encoding/json"
 	"goNbt/lib"
 	"goNbt/lib/nbt"
@@ -83,6 +85,40 @@ func SerializeNBT(jsonData *C.char, compress *C.char, outLength *C.int) *C.char 
 	// Allocate C memory for binary data
 	cBytes := C.CBytes(serializedBytes)
 	return (*C.char)(cBytes)
+}
+
+func IsNbtData(data []byte) bool {
+	if len(data) < 3 {
+		return false
+	}
+	if data[0] == 0x1F && data[1] == 0x8B {
+		// Gzip header
+		gzipReader, err := gzip.NewReader(bytes.NewReader(data))
+		if err != nil {
+			return false
+		}
+		defer gzipReader.Close()
+		firstByte := make([]byte, 1)
+		n, err := gzipReader.Read(firstByte)
+		if err != nil || n != 1 {
+			return false
+		}
+		return firstByte[0] == byte(nbt.BTagCompound) || firstByte[0] == byte(nbt.BTagList)
+	}
+	if data[0] == 0x78 && (data[1] == 0x01 || data[1] == 0x5e || data[1] == 0x9c || data[1] == 0xda) {
+		zlibReader, err := zlib.NewReader(bytes.NewReader(data))
+		if err != nil {
+			return false
+		}
+		defer zlibReader.Close()
+		firstByte := make([]byte, 1)
+		n, err := zlibReader.Read(firstByte)
+		if err != nil || n != 1 {
+			return false
+		}
+		return firstByte[0] == byte(nbt.BTagCompound) || firstByte[0] == byte(nbt.BTagList)
+	}
+	return data[0] == byte(nbt.BTagCompound) || data[0] == byte(nbt.BTagList)
 }
 
 // FreeMemory frees memory allocated by the library
