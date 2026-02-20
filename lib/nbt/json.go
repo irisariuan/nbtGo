@@ -5,13 +5,6 @@ import (
 	"fmt"
 )
 
-// JSONTag is a helper structure for JSON serialization
-type JSONTag struct {
-	Type  string          `json:"type"`
-	Name  string          `json:"name,omitempty"`
-	Value json.RawMessage `json:"value"`
-}
-
 // MarshalJSON implements json.Marshaler for TagByte
 func (t *TagByte) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]any{
